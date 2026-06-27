@@ -14,6 +14,7 @@ let
     take
     length
     last
+    max
     ;
   inherit (lib.strings)
     sanitizeDerivationName
@@ -42,7 +43,7 @@ let
     let
       prefix = optionalString (hasPrefix "/" path) "/";
       split = splitPath [ path ];
-      parents = take ((length split) - 1) split;
+      parents = take (max 0 ((length split) - 1)) split;
     in
     foldl'
       (state: item:
