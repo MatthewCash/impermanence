@@ -7,7 +7,6 @@ let
     mapAttrsToList
     zipAttrsWith
     flatten
-    mkAfter
     mkOption
     mkIf
     mkMerge
@@ -385,21 +384,6 @@ in
                   text = "${persistFileScript}";
                 };
               };
-
-            boot.initrd.postMountCommands =
-              let
-                neededForBootDirs = filter (dir: elem dir.dirPath pathsNeededForBoot) directories;
-                mkBindMount = { persistentStoragePath, dirPath, ... }:
-                  let
-                    target = concatPaths [ "/mnt-root" persistentStoragePath dirPath ];
-                  in
-                  ''
-                    mkdir -p ${escapeShellArg target}
-                    mountFS ${escapeShellArgs [ target dirPath ]} bind none
-                  '';
-              in
-              mkIf (options.boot.initrd.systemd.enable.visible or true && !config.boot.initrd.systemd.enable)
-                (mkAfter (concatMapStrings mkBindMount neededForBootDirs));
           }
 
           # Work around an issue with persisting /etc/machine-id where the
